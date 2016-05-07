@@ -1,0 +1,21 @@
+HOST palmetto
+	HostName "user.palmetto.clemson.edu"
+	User robertu
+HOST joey*
+	HostName "%h.cs.clemson.edu"
+	User robertu
+HOST imp*
+	HostName "%h.cs.clemson.edu"
+	User robertu
+HOST koala*
+	HostName "%h.cs.clemson.edu"
+	User robertu
+HOST access
+	HostName "access.cs.clemson.edu"
+	ForwardAgent yes
+	User robertu
+
+HOST *
+	User root
+	ForwardAgent no
+	ForwardX11 no

@@ -1,0 +1,7 @@
+FROM derjudge/archlinux
+
+RUN pacman -Syu --noconfirm && \
+	pacman -S salt-zmq --noconfirm && \
+	mkdir -p /srv/salt && \
+	mkdir -p /srv/pillar
+

@@ -1,0 +1,19 @@
+[user]
+	email = rr.underwood94@gmail.com
+	signingkey = 7EAD4AFA
+	name = Robert Underwood
+[core]
+	excludesFile = /home/{{user}}/.gitexcludes
+[color]
+	ui = auto
+[alias]
+	co = checkout
+	s = status
+[mergetool "fugitive"]
+	cmd = vim -f -c \"Gdiff\" \"$MERGED\"
+[merge]
+	tool = fugitive
+{% if grains['git_major_version']|int >= 2 %}
+[push]
+	default = simple
+{% endif %}

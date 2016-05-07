@@ -1,0 +1,7 @@
+FROM fedora:23
+
+RUN dnf update -y && \
+	dnf install -y salt-minion && \
+	mkdir -p /srv/salt && \
+	mkdir -p /srv/pillar
+
