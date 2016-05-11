@@ -1,139 +1,125 @@
-# Config (((
-# Reload sxhkd configuration
+# BSPWM Config
+
+# launchers (((
+# 
+super + Return
+	$TERMINAL
+super + w
+	$BROWSER
+super + e
+	$FILE_BROWSER
+super + space
+	dmenu_run
+# )))
+
+# control (((
+# make sxhkd reload its configuration files:
 super + Escape
 	pkill -USR1 -x sxhkd
-
-# Quit bspwm
+# quit bspwm normally
 super + alt + Escape
-	pkill -x panel; bspc quit
-
-# Reload or quit bspwm
-#super + alt + {_,shift + }Escape
-#	pkill -x panel; \
-#	{bspc query -T > "$BSPWM_TREE"; \
-#		bspc query -H > "$BSPWM_HISTORY"; \
-#			bspc query -S > "$BSPWM_STACK"; \
-#			bspc quit, \
-#	bspc quit 1}
-
-# Modify window gap
-super + {minus,equal}
-	bspc config -d focused window_gap $(($(bspc config -d focused window_gap) {-,+} 2))
+	bspc quit
 # )))
 
-# Monitor (((
-super + ctrl + {n,p}
-	bspc monitor --focus {next,prev}
-# )))
+# windows (((
+# close and kill
+super + {C,c}
+	bspc node {--close,--kill}
 
-# Desktop (((
+# alternate between the tiled and monocle layout
 super + t
 	bspc desktop --layout next
 
-super + u
-	bspc desktop --focus next.urgent; \
-	bspc window --focus next.urgent
+# swap the current node and the biggest node
+super + g
+	bspc node -s biggest
 
-super + b
-	bspc desktop --balance
+# set the window state
+super + {m,shift + m,s,f}
+	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
-super + q
-	bspc desktop --equalize
+# set the node flags
+super + ctrl + {x,y,z}
+	bspc node -g {locked,sticky,private}
 
-super + {comma,period}
-	bspc desktop --circulate {backward,forward}
-
-super + ctrl + {comma,period}
-	bspc desktop --rotate {270,90}
-
-super + {z,v}
-	bspc desktop --flip {horizontal,vertical}
-
-super + bracket{left,right}
-	bspc desktop --focus {prev,next}
-
-super + ctrl + {_,shift + }space
-	bspc {window --presel cancel,desktop --cancel-presel}
-
-super + {_,shift + }{1-9,0}
-	bspc {desktop --focus,window --to-desktop} focused:^{1-9,10}
-# )))
-
-# Window (((
-super + shift + c
-	bspc window --close
-
-super + {f,s,d,x,a,c}
-	bspc window --toggle {floating,fullscreen,pseudo_tiled,sticky,private,locked}
-
-super + {grave,Tab}
-	bspc {desktop,window} --focus last
-
-super + apostrophe
-	bspc window --swap last
-
-super + {o,i}
-	bspc control --record-history off; \
-	bspc window {older,newer} -f; \
-	bspc control --record-history on
-
-super + m
-	bspc window --swap biggest
-
-super + y
-	bspc window --to-window last.manual
-
-super + {_,shift + }{h,j,k,l}
-	bspc window --{focus,swap} {left,down,up,right}
-
-super + {_,alt + }{n,p}
-	bspc window --{focus,to-monitor} {next,prev}
-
-super + ctrl + bracket{left,right}
-	bspc window --to-monitor {next,prev}
-
-super + ctrl + {h,j,k,l}
-	bspc window --presel {left,down,up,right}
-
+# expand the tiled space in the given direction
 super + alt + {h,j,k,l}
-	bspc window --edge {left -10,down +10,up -10,right +10}
+	bspc node {@west -r -10,@south -r +10,@north -r -10,@east -r +10}
 
+# contract the tiled space in the given direction
 super + alt + shift + {h,j,k,l}
-	bspc window --edge {right -10,up +10,down -10,left +10}
+	bspc node {@east -r -10,@north -r +10,@south -r -10,@west -r +10}
 
+# move a floating window
+super + {Left,Down,Up,Right}
+	xdo move {-x -20,-y +20,-y -20,-x +20}
+# )))
+
+# movement (((
+# focus the node in the given direction
+super + {_,shift + }{h,j,k,l}
+	bspc node -{f,s} {west,south,north,east}
+
+# focus the node for the given path jump
+super + {p,b,comma,period}
+	bspc node -f @{parent,brother,first,second}
+
+# focus the next/previous node
+super + {_,shift + } Tab
+	bspc node -f {next,prev}
+
+# focus the next/previous desktop
+super + bracket{left,right}
+	bspc desktop -f {prev,next}
+
+# focus the last node/desktop
+super + ctrl + {grave,Tab}
+	bspc {node,desktop} -f last
+
+# focus the older or newer node in the focus history
+super + {o,i}
+	bspc wm -h off; \
+	bspc node {older,newer} -f; \
+	bspc wm -h on
+
+# focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
+
+# )))
+
+# new windows (((
+
+# preselect the direction
+super + ctrl + {h,j,k,l}
+	bspc node -p {west,south,north,east}
+	
+# preselect the ratio
 super + ctrl + {1-9}
-	bspc window --ratio 0.{1-9}
+	bspc node -o 0.{1-9}
+
+# cancel the preselection for the focused node
+super + ctrl + space
+	bspc node -p cancel
+
+# cancel the preselection for the focused desktop
+super + ctrl + shift + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
 # )))
 
-# Pointer (((
+# mouse (((
+# focus
 ~button1
-	bspc pointer --grab focus
+	bspc pointer -g focus
 
+# start move/resize
 super + button{1-3}
-	bspc pointer --grab {move,resize_side,resize_corner}
+	; bspc pointer -g {move,resize_side,resize_corner}
 
+# end move/resize
 super + @button{1-3}
-	bspc pointer --ungrab
-# )))
-
-# Launchers (((
-super + space
-	dmenu_run 
-
-super + Return
-	$TERMINAL
-
-super + w
-	$BROWSER
-
-super + e
-	$FILE_BROWSER
-
-ctrl + alt + Delete
-	$TERMINAL -e htop
-
-super + slash
-	dm-tool lock
+	bspc pointer -u
 # )))
 
 # Special keys (((
@@ -193,8 +179,5 @@ XF86Launch9
 XF86Favorites
 	$VIRTUALIZATION
 
-super + shift + z
-	scrot '%Y-%m-%d_%H%M%S_$wx$h.png' -e 'mv $f ~/Pictures/Screenshots/'
-# )))
-
+#)))
 # vim: foldmethod=marker foldmarker=(((,)))
