@@ -49,6 +49,8 @@ set softtabstop=4
 set spell spelllang=en_us
 set tabstop=4
 set wildignore+=*.git/*,*.hg/*,*.svn/*,*/__pycache__/*
+set wildmode=longest:full,full
+set wildmenu
 syntax on
 ")))
 

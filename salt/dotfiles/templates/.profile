@@ -34,7 +34,10 @@ alias o="xdg-open"
 alias pacman="sudo pacman"
 alias py3=python3
 alias rdesktop="rdesktop -K -f"
+alias salt="sudo salt"
 alias zless=$PAGER
+alias zfs="sudo zfs"
+alias zpool="sudo zpool"
 #)))
 
 # vim: foldmethod=marker foldmarker=(((,)))

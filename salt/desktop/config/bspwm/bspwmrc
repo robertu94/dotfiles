@@ -34,11 +34,3 @@ for MONITOR in $(bspc query -M); do
 		$(echo -e '\uf1c0') \
 		$(echo -e '\uf085')
 done
-
-bspc rule --add Firefox desktop=^1 border=off
-bspc rule --add google-chrome desktop=^1 border=off
-bspc rule --add libreoffice desktop=^6
-bspc rule --add VirtualBox desktop=^7
-bspc rule --add virt-manager desktop=^7
-bspc rule --add Remmina desktop=^7
-bspc rule --add Gimp desktop=^8 follow=on floating=on
