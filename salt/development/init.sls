@@ -1,13 +1,14 @@
+{% from "development/map.jinja" import development with context %}
 development.packages:
   pkg.installed:
     - pkgs:
-      - {{pillar['packages']['gcc']}}
-      - {{pillar['packages']['gdb']}}
-      - {{pillar['packages']['git']}}
-      - {{pillar['packages']['cscope']}}
-      - {{pillar['packages']['ctags']}}
-      - {{pillar['packages']['python']}}
-      - {{pillar['packages']['go']}}
-      - {{pillar['packages']['rust']}}
-      - {{pillar['packages']['clang']}}
-      - {{pillar['packages']['lldb']}}
+      - {{ development.gcc }}
+      - {{ development.gdb }}
+      - {{ development.git }}
+      - {{ development.cscope }}
+      - {{ development.ctags }}
+      - {{ development.python3 }}
+      - {{ development.go }}
+      - {{ development.rust }}
+      - {{ development.clang }}
+      - {{ development.lldb }}

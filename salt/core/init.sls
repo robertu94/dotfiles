@@ -1,6 +1,7 @@
+{% from "core/map.jinja" import core with context %}
 core.packages:
   pkg.installed:
     - pkgs:
-      - {{pillar['packages']['gvim']}}
-      - {{pillar['packages']['zsh']}}
-      - {{pillar['packages']['bash']}}
+      - {{ core.gvim }}
+      - {{ core.zsh }}
+      - {{ core.bash }}

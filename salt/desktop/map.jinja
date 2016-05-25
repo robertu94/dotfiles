@@ -1,0 +1,52 @@
+{% set desktop = salt['grains.filter_by']({
+    'default': {
+        'bspwm': 'bspwm',
+        'lightdm': 'lightdm',
+        'lightdm_gtk_greeter': 'lightdm-gtk-greeter',
+        'pulseaudio': 'pulseaudio',
+        'pulseaudio_alsa': 'pulseaudio-alsa',
+        'nvidia': 'nvidia',
+        'acpi': 'acpi',
+        'alsa_utils': 'alsa-utils',
+        'dmenu': 'dmenu',
+        'dunst': 'dunst',
+        'iw': 'iw',
+        'libnotify': 'libnotify',
+        'mpc': 'mpc',
+        'mpd': 'mpd',
+        'polkit_gnome': 'polkit-gnome',
+        'scrot': 'scrot',
+        'ttf_dejavu': 'ttf-dejavu',
+        'xtitle': 'xtitle-git',
+        'lemonbar': 'lemonbar-ucs4-git',
+        'hsetroot': 'hsetroot',
+        'light': 'light',
+        'kbdlight': 'kbdlight',
+    },
+    'Debian': {
+        'nvidia': 'nvidia-current',
+		'xtitle': 'xtitle',
+    },
+    'RedHat': {
+        'lightdm_gtk_greeter': 'lightdm-gtk',
+        'pulseaudio_alsa': 'alsa-plugins-pulseaudio',
+        'ttf_dejavu': 'dejavu-sans-mono-fonts',
+    },
+},
+merge=salt['pillar.get']('core:lookup')) %}
+
+{# Debian Unavailble Packages #}
+{# bspwm: not availible #}
+{# dmenu: not availible#}
+{# kbdlight: not availible#}
+{# lemonbar: not availible#}
+{# light: not availible#}
+{# polkit-gnome: not availible#}
+{# pulseaudio-alsa: not availble#}
+
+{# RedHat Unavailble Packages#}
+{# bspwm: not availible #}
+{# hsetroot: not availible #}
+{# kbdlight:  not availible #}
+{# lemonbar:  not availible #}
+{# xtitle: not availible  #}

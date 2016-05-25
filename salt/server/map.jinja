@@ -1,0 +1,21 @@
+{% set server = salt['grains.filter_by']({
+    'default': {
+        'htop': 'htop',
+        'iotop': 'iotop',
+        'openssh': 'openssh',
+        'procps_ng': 'procps-ng',
+        'terminus_font': 'terminus-font',
+        'tmux': 'tmux',
+    },
+    'Debian': {
+        'openssh': 'openssh-server',
+        'terminus_font': 'xfonts-terminus',
+    },
+    'RedHat': {
+        'openssh': 'openssh-server',
+        'procps_ng': 'procps',
+        'terminus_font': 'terminus-fonts-console',
+    },
+},
+merge=salt['pillar.get']('server:lookup')) %}
+

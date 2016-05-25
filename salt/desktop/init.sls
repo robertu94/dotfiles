@@ -1,31 +1,31 @@
+{% from "desktop/map.jinja" import desktop with context %}
 desktop.packages:
   pkg.installed:
     - pkgs:
-      - {{pillar['packages']['bspwm']}}
-      - {{pillar['packages']['lightdm']}}
-      - {{pillar['packages']['lightdm-gtk-greeter']}}
-      - {{pillar['packages']['pulseaudio']}}
-      - {{pillar['packages']['pulseaudio-alsa']}}
-      - {{pillar['packages']['nvidia']}}
+      - {{ desktop.bspwm }}
+      - {{ desktop.lightdm }}
+      - {{ desktop.lightdm_gtk_greeter }}
+      - {{ desktop.pulseaudio }}
+      - {{ desktop.pulseaudio_alsa }}
+      - {{ desktop.nvidia }}
       # Specific to my panel configuration
-      - {{pillar['packages']['acpi']}}
-      - {{pillar['packages']['alsa-utils']}}
-      - {{pillar['packages']['dmenu']}}
-      - {{pillar['packages']['dunst']}}
-      - {{pillar['packages']['iw']}}
-      - {{pillar['packages']['libnotify']}}
-      - {{pillar['packages']['mpc']}}
-      - {{pillar['packages']['mpd']}}
-      - {{pillar['packages']['polkit-gnome']}}
-      - {{pillar['packages']['scrot']}}
-      - {{pillar['packages']['ttf-dejavu']}}
-      - {{pillar['packages']['xtitle-git']}}
+      - {{ desktop.acpi }}
+      - {{ desktop.alsa_utils }}
+      - {{ desktop.dmenu }}
+      - {{ desktop.dunst }}
+      - {{ desktop.iw }}
+      - {{ desktop.libnotify }}
+      - {{ desktop.mpc }}
+      - {{ desktop.mpd }}
+      - {{ desktop.polkit_gnome }}
+      - {{ desktop.scrot }}
+      - {{ desktop.ttf_dejavu }}
       # Require AUR to install
-      - {{pillar['packages']['lemonbar-ucs4-git']}}
-      - {{pillar['packages']['hsetroot']}}
-      - {{pillar['packages']['light']}}
-      - {{pillar['packages']['kbdlight']}}
-      - {{pillar['packages']['xtitle-git']}}
+      - {{ desktop.lemonbar }}
+      - {{ desktop.hsetroot }}
+      - {{ desktop.light }}
+      - {{ desktop.kbdlight }}
+      - {{ desktop.xtitle }}
 
 {% for user in pillar['users'] %}
 /home/{{user}}/.config:

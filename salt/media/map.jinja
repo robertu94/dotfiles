@@ -1,0 +1,29 @@
+{% set media = salt['grains.filter_by']({
+    'default': {
+        'vlc': 'vlc',
+        'mpc': 'mpc',
+        'mpd': 'mpd',
+        'ncmpcpp': 'ncmpcpp',
+        'ffmpeg': 'ffmpeg',
+        'gst_plugins_good': 'gst-plugins-good',
+        'gst_plugins_bad': 'gst-plugins-bad',
+        'gst_plugins_ugly': 'gst-plugins-ugly',
+        'gst_libav': 'gst-libav',
+        'gstreamer': 'gstreamer',
+    },
+    'Debian': {
+        'gst_plugins_good': 'gstreamer1.0-plugins-good',
+        'gst_plugins_bad': 'gstreamer1.0-plugins-bad',
+        'gst_plugins_ugly': 'gstreamer1.0-plugins-ugly',
+        'gst_libav': 'gstreamer1.0-libav',
+        'gstreamer': 'gstreamer1.0-x',
+    },
+    'RedHat': {
+        'gst_plugins_good': 'gstreamer-plugins-good',
+        'gst_plugins_bad': 'gstreamer-plugins-bad',
+        'gst_plugins_ugly': 'gstreamer-plugins-ugly',
+        'gst_libav': 'gstreamer1-libav',
+    },
+},
+merge=salt['pillar.get']('media:lookup')) %}
+

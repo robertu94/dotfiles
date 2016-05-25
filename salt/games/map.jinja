@@ -1,0 +1,11 @@
+{% set games = salt['grains.filter_by']({
+    'default': {
+        'steam': 'steam',
+        'lib32_nvidia_utils': 'lib32-nvidia-utils',
+    },
+    'Debian': {
+        'steam': 'http://media.steampowered.com/client/installer/steam.deb ',
+    },
+},
+merge=salt['pillar.get']('games:lookup')) %}
+

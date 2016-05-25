@@ -1,0 +1,14 @@
+{% set core = salt['grains.filter_by']({
+    'default': {
+        'gvim': 'gvim',
+        'zsh': 'zsh',
+        'bash': 'bash',
+    },
+    'Debian': {
+        'gvim': 'vim-gtk3',
+    },
+    'RedHat': {
+        'gvim': 'vim-enhanced',
+    },
+},
+merge=salt['pillar.get']('core:lookup')) %}

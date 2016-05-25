@@ -1,0 +1,7 @@
+{% set webbrowser = salt['grains.filter_by']({
+    'default': {
+        'firefox': 'firefox',
+    },
+},
+merge=salt['pillar.get']('webbrowser:lookup')) %}
+

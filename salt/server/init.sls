@@ -1,12 +1,14 @@
+{% from "server/map.jinja" import server with context %}
+
 server.packages:
   pkg.installed:
     - pkgs:
-      - {{pillar['packages']['tmux']}}
-      - {{pillar['packages']['procps-ng']}}
-      - {{pillar['packages']['htop']}}
-      - {{pillar['packages']['iotop']}}
-      - {{pillar['packages']['terminus-font']}}
-      - {{pillar['packages']['openssh']}}
+      - {{ server.tmux }}
+      - {{ server.procps_ng }}
+      - {{ server.htop }}
+      - {{ server.iotop }}
+      - {{ server.terminus_font }}
+      - {{ server.openssh }}
 sshd:
   service.running:
     - enable: True

@@ -1,0 +1,25 @@
+{% set development = salt['grains.filter_by']({
+    'default': {
+        'gcc': 'gcc',
+        'gdb': 'gdb',
+        'git': 'git',
+        'cscope': 'cscope',
+        'ctags': 'ctags',
+        'python3': 'python',
+        'go': 'go',
+        'rust': 'rust',
+        'clang': 'clang',
+        'lldb': 'lldb',
+    },
+    'Debian': {
+        'ctags': 'exuberant-ctags',
+        'go': 'golang',
+    },
+    'RedHat': {
+        'go': 'golang',
+    },
+},
+merge=salt['pillar.get']('development:lookup')) %}
+
+{# Debian and RedHat Unavailble Packages #}
+{#rust: not availible #}

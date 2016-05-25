@@ -1,5 +1,6 @@
+{% from "games/map.jinja" import games with context %}
 games.packages:
   pkg.installed:
     - pkgs:
-      - {{pillar['packages']['steam']}}
-      - {{pillar['packages']['lib32-nvidia-utils']}}
+      - {{ games.steam }}
+      - {{ games.lib32_nvidia_utils }}
