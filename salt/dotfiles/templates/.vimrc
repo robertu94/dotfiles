@@ -11,8 +11,10 @@ Plugin 'scrooloose/syntastic'
 Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 {% endif %}
+Plugin 'tpope/vim-eunuch.git'
 Plugin 'tpope/vim-fugitive.git'
 Plugin 'tpope/vim-surround.git'
+Plugin 'tpope/vim-unimpaired.git'
 Plugin 'vim-scripts/scratch.vim.git'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
@@ -28,11 +30,15 @@ Plugin 'fatih/vim-go.git'
 Plugin 'chase/vim-ansible-yaml'
 Plugin 'Glench/Vim-Jinja2-Syntax'
 Plugin 'rust-lang/rust.vim'
+Plugin 'nickhutchinson/vim-systemtap'
 filetype plugin indent on
 " )))
 
 "Mappings (((
 inoremap jj <ESC>
+cnoremap <C-A> <Home>
+cnoremap <C-E> <End>
+cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 map <Leader> <Plug>(easymotion-prefix)
 ")))
 
@@ -40,6 +46,8 @@ map <Leader> <Plug>(easymotion-prefix)
 set autoindent
 set backspace=indent,eol,start
 set hidden
+set history=200
+set incsearch
 set ignorecase
 set mouse=a
 set number
@@ -48,6 +56,7 @@ set smartcase
 set softtabstop=4
 set spell spelllang=en_us
 set tabstop=4
+set nowrap
 set wildignore+=*.git/*,*.hg/*,*.svn/*,*/__pycache__/*
 set wildmode=longest:full,full
 set wildmenu
