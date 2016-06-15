@@ -17,4 +17,12 @@
     - group: {{user}}
     - file_mode: 0700
     - template: jinja
+
+#bootstrap vundle
+Vundle Bootstrap {{user}}:
+  git.latest:
+    - name: https://github.com/VundleVim/Vundle.vim/
+    - target: /home/{{user}}/.vim/bundle/Vundle.vim
+    - user: {{user}}
+
 {% endfor %}
