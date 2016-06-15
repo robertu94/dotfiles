@@ -17,5 +17,6 @@
         'terminus_font': 'terminus-fonts-console',
     },
 },
-merge=salt['pillar.get']('server:lookup')) %}
+merge=salt['pillar.get']('server:lookup'),
+base='default') %}
 

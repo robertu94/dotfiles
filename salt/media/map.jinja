@@ -25,5 +25,6 @@
         'gst_libav': 'gstreamer1-libav',
     },
 },
-merge=salt['pillar.get']('media:lookup')) %}
+merge=salt['pillar.get']('media:lookup'),
+base='default') %}
 

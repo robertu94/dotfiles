@@ -33,7 +33,8 @@
         'ttf_dejavu': 'dejavu-sans-mono-fonts',
     },
 },
-merge=salt['pillar.get']('core:lookup')) %}
+merge=salt['pillar.get']('core:lookup'),
+base='default') %}
 
 {# Debian Unavailble Packages #}
 {# bspwm: not availible #}

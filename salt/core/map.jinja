@@ -11,4 +11,5 @@
         'gvim': 'vim-enhanced',
     },
 },
-merge=salt['pillar.get']('core:lookup')) %}
+merge=salt['pillar.get']('core:lookup'),
+base='default') %}

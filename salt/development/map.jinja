@@ -19,7 +19,8 @@
         'go': 'golang',
     },
 },
-merge=salt['pillar.get']('development:lookup')) %}
+merge=salt['pillar.get']('development:lookup'),
+base='default') %}
 
 {# Debian and RedHat Unavailble Packages #}
 {#rust: not availible #}

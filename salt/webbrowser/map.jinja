@@ -3,5 +3,6 @@
         'firefox': 'firefox',
     },
 },
-merge=salt['pillar.get']('webbrowser:lookup')) %}
+merge=salt['pillar.get']('webbrowser:lookup'),
+base='default') %}
 

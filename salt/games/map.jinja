@@ -7,5 +7,6 @@
         'steam': 'http://media.steampowered.com/client/installer/steam.deb ',
     },
 },
-merge=salt['pillar.get']('games:lookup')) %}
+merge=salt['pillar.get']('games:lookup'),
+base='default') %}
 
