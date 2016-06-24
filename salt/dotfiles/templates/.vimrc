@@ -73,11 +73,15 @@ set t_Co=256
 silent! colorscheme solarized
 
 if has("gui_running")
-    if has("gui_gtk2")
-        set guifont=DejaVu\ Sans\ Mono\ 12
-    else
-        set guifont=Ubuntu\ Mono\ derivative\ Powerline:h13
-    endif
+	set guioptions-=m
+	set guioptions-=T
+	set guioptions-=r
+	set guioptions-=L
+	if has("gui_gtk")
+		set guifont=Terminess\ Powerline\ 10
+	elseif has("gui_win32")
+		set guifont=Courier_New:h8:cANSI
+	endif
 endif
 " )))
 
