@@ -1,0 +1,22 @@
+#info
+j	next-line
+k	prev-line
+l	forward-char
+h	backward-char
+g	beginning-of-node
+G	end-of-node
+n	search-next
+N	search-previous
+\mu clear-search
+/	isearch-forward
+?	isearch-backward
+^f	scroll-forward
+^b	scroll-backward
+^t	history-node
+^l	redraw-display
+u	up-node
+^]	select-reference-this-line
+<RET>	select-reference-this-line
+
+#var
+highlight-searches=On

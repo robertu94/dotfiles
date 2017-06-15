@@ -1,12 +1,12 @@
-URxvt.font: xft:Terminess Powerline:size=10
+*.font: xft:DejaVu Sans Mono for Powerline:size=9
 URxvt.iso14755: false
 URxvt.iso14755_52: false
 URxvt.perl-ext-common: resize-font
-URxvt.resize-font.smaller: C-minus
-URxvt.resize-font.bigger: C-plus
+URxvt.keysym.C-equal:	perl:font-size:reset
+URxvt.keysym.C-plus:	perl:font-size:increase
+URxvt.keysym.C-minus:	perl:font-size:decrease
 URxvt.scrollBar: false
 
-xterm*faceName: Terminess Powerline:size=10
 xterm*dynamicColors: true
 xterm*utf8: 2
 
@@ -19,12 +19,19 @@ xterm*utf8: 2
 #define S_base2         #eee8d5
 #define S_base3         #fdf6e3
 
+URxvt.transparent: true
 *background:            S_base03
 *foreground:            S_base0
+*tintColor:             S_base03
+*fading:				15
 *fadeColor:             S_base03
+*shading:				75
 *cursorColor:           S_base1
 *pointerColorBackground:S_base01
 *pointerColorForeground:S_base1
+
+URxvt*background:		rgba:0000/2B00/3600/CC00
+URxvt*depth:			32
 
 #define S_yellow        #b58900
 #define S_orange        #cb4b16
