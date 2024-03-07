@@ -1,0 +1,4 @@
+---
+has_cuda: true
+cuda_arch: 86
+cuda_dir: "/usr/local/cuda/bin"

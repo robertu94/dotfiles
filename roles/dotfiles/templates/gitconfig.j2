@@ -1,0 +1,26 @@
+[user]
+	name = Robert Underwood
+{% if 'work' in group_names %}
+    email = {{work_email}}
+{% else %}
+    email = {{home_email}}
+{% endif %}
+[alias]
+	s = status
+	co = checkout
+	d = difftool
+[init]
+	defaultBranch = main
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+[difftool]
+	prompt = false
+[difftool "difftastic"]
+  cmd = difft "$LOCAL" "$REMOTE"
+[diff]
+	tool = difftastic
+[pager]
+  difftool = true

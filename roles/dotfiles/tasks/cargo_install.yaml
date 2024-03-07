@@ -1,0 +1,13 @@
+---
+- name: 'check if {{name}} installed'
+  shell: 'which {{name}}'
+  ignore_errors: true
+  register: cmd
+  changed_when: no
+  environment:
+    PATH: '{{ansible_user_dir}}/.cargo/bin:{{ansible_env.PATH}}'
+- name: 'install {{name}}'
+  shell: 'cargo install {{pkg}}'
+  when: 'cmd.rc != 0'
+  environment:
+    PATH: '{{ansible_user_dir}}/.cargo/bin:{{ansible_env.PATH}}'

@@ -1,0 +1,3 @@
+---
+- name: update_fzf
+  shell: '{{ansible_user_dir}}/git/contrib/fzf/install --no-update-rc --completion --key-bindings'

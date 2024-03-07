@@ -1,0 +1,181 @@
+---
+- name: setup prefered directory sturcture
+  file:
+    path: '{{item}}'
+    state: directory
+    mode: 0755
+  loop:
+    - '{{ansible_user_dir}}/.config'
+    - '{{ansible_user_dir}}/.config/git'
+    - '{{ansible_user_dir}}/.config/nvim'
+    - '{{ansible_user_dir}}/.local'
+    - '{{ansible_user_dir}}/.local/bin'
+    - '{{ansible_user_dir}}/.local/cache'
+    - '{{ansible_user_dir}}/git'
+    - '{{ansible_user_dir}}/git/contrib'
+    - '{{ansible_user_dir}}/git/datasets'
+  tags:
+    - nvim
+    - mamba
+    - shell
+    - shellcmd
+    - shellconfig
+- name: check nvim
+  shell: 'which nvim'
+  ignore_errors: yes
+  register: nvim_installed
+  changed_when: false
+  tags:
+    - nvim
+- name: install nvim
+  unarchive:
+    src: 'https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz'
+    dest: '{{ansible_user_dir}}/.local/'
+    remote_src: yes
+    extra_opts:
+      - "--strip-components=1"
+  when: nvim_installed != 0
+  tags:
+    - nvim
+- name: setup various dotfiles
+  template:
+    src: '{{item.src}}'
+    dest: '{{item.dst}}'
+    mode: 0644
+  loop:
+    - { src: 'init.lua.j2', dst: '{{ansible_user_dir}}/.config/nvim/init.lua'}
+    - { src: 'gitconfig.j2', dst: '{{ansible_user_dir}}/.gitconfig'}
+    - { src: 'gitexcludes.j2', dst: '{{ansible_user_dir}}/.config/git/ignore'}
+    - { src: 'gdb.j2', dst: '{{ansible_user_dir}}/.gdbinit'}
+    - { src: 'sshconfig.j2', dst: '{{ansible_user_dir}}/.ssh/config'}
+    - { src: 'bashrc.j2', dst: '{{ansible_user_dir}}/.bashrc'}
+  tags:
+    - mamba
+    - nvim
+    - shell
+    - shellcmd
+    - shellconfig
+- name: install rust based commands
+  import_tasks: curl_install.yaml
+  vars:
+    name: 'cargo'
+    src: 'https://sh.rustup.rs'
+    extra_args: '--profile minimal --default-toolchain stable -y'
+  tags:
+    - rust
+- name: 'check if cargo installed'
+  shell: 'which cargo'
+  ignore_errors: true
+  register: cargo_installed
+  changed_when: false
+  tags:
+    - rust
+- name: install starship
+  import_tasks: curl_install.yaml
+  vars:
+    name: 'starship'
+    src: 'https://starship.rs/install.sh'
+    extra_args: '--bin-dir {{ansible_user_dir}}/.local/bin --force'
+  tags:
+    - rust
+    - shell
+    - shellcmd
+- name: install rust based commands
+  include_tasks: cargo_install.yaml
+  vars:
+    name: '{{item.name}}'
+    pkg: '{{item.pkg}}'
+  loop:
+    - { name: 'zoxide', pkg: 'zoxide' }
+    - { name: 'difft', pkg: 'difftastic' }
+    - { name: 'fd', pkg: 'fd-find' }
+    - { name: 'dust', pkg: 'du-dust' }
+    - { name: 'mpigdb', pkg: 'mpigdb' }
+    - { name: 'sccache', pkg: 'sccache' }
+  when: cargo_installed.rc == 0
+  tags:
+    - rust
+    - shellcmd
+- name: check dagger installed
+  shell: 'which dagger'
+  changed_when: no
+  ignore_errors: true
+  register: dagger_installed
+  tags:
+    - dagger
+    - shellcmd
+- name: download dagger
+  get_url:
+    url: https://dl.dagger.io/dagger/install.sh
+    dest: '{{ansible_user_dir}}/.local/cache/dagger.sh'
+    mode: 0744
+  when: dagger_installed.rc != 0
+  tags:
+    - dagger
+    - shellcmd
+- name: install dagger
+  shell: '{{ansible_user_dir}}/.local/cache/dagger.sh'
+  environment:
+    BID_DIR: '{{ansible_user_dir}}/.local/bin'
+  when: dagger_installed.rc != 0
+  tags:
+    - dagger
+    - shellcmd
+- name: install git-lfs
+  copy:
+    src: 'git-lfs'
+    dest: '{{ansible_user_dir}}/.local/bin/git-lfs'
+- name: check pip installed
+  shell: 'which pip3'
+  ignore_errors: yes
+  register: pip_installed
+  changed_when: false
+  tags:
+    - shellcmd
+- name: install m
+  pip:
+    name: git+http://github.com/robertu94/m
+    extra_args: '--user'
+  when: pip_installed.rc == 0
+  tags:
+    - shellcmd
+- name: download spack
+  git:
+    repo: 'https://github.com/spack/spack'
+    dest: '{{spack_home}}'
+    update: no
+  when: pip_installed.rc == 0
+  tags:
+    - shellcmd
+    - spack
+- name: download robertu94 spack
+  git:
+    repo: 'https://github.com/robertu94/spack_packages'
+    dest: '{{ansible_user_dir}}/git/contrib/robertu94_packages'
+    update: no
+  when: pip_installed.rc == 0
+  tags:
+    - shellcmd
+    - spack
+- name: download fzf
+  git:
+    repo: https://github.com/junegunn/fzf.git
+    dest: '{{ansible_user_dir}}/git/contrib/fzf'
+  notify:
+    - update_fzf
+  tags:
+    - shell
+    - shellcmd
+- name: install mamba 
+  import_tasks: curl_install.yaml
+  vars:
+    name: 'micromamba'
+    src: 'https://micro.mamba.pm/install.sh'
+    extra_args: ''
+  environment:
+    INIT_YES: no
+    BIN_FOLDER: '{{ansible_user_dir}}/.local/bin'
+    PREFIX_LOCATION: '{{ansible_user_dir}}/git/contrib/mamba'
+  tags:
+    - mamba
+    - shellcmd

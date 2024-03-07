@@ -1,0 +1,97 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+function remove_path(){
+  PATH=:$PATH:
+  PATH=${PATH//:$1:/:}
+  PATH=${PATH#:}; PATH=${PATH%:}
+  export PATH
+}
+
+# User specific environment
+if [[ -z "${M_PYTHON_SITELIB}" ]]
+then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+    PATH="$HOME/.cargo/bin:$PATH"
+    export LD_LIBRARY_PATH="$HOME/.local/lib64/:$HOME/.local/lib/:$LD_LIBRARY_PATH"
+    export PKG_CONFIG_PATH=$HOME/.local/share/pkgconfig/
+    export M_PYTHON_SITELIB="$(python3 -c "import site; print(site.USER_SITE)")"
+    export GOPATH=$HOME/.local/go
+    export LIBPRESSIO_PLUGINS=${HOME}/.local/lib64/liblibpressio_meta.so
+fi
+export PATH
+export EDITOR=nvim
+export CTEST_PARALLEL_LEVEL=$(nproc)
+export BAT_THEME="Solarized (light)"
+export HISTSIZE=100000
+export SCCACHE_IGNORE_SERVER_IO_ERROR=1
+export ANSIBLE_VAULT_PASSWORD_FILE="./.vault_pass"
+export ANSIBLE_SSH_CONTROL_PATH="$HOME/.ssh/.control_channels/%%h:%%p:%%r"
+export huggingface_token={{hugging_face_token}}
+export HF_HOME={{hf_home}}
+{% if 'laptop' in group_names %}
+export SRC_ENDPOINT="http://delta:7080"
+export SRC_ACCESS_TOKEN="{{srcgraph_token}}"
+{% endif %}
+
+function use_build() {
+    {{setup_spack_build_env}}
+}
+function use_mamba() {
+    # >>> mamba initialize >>>
+    # !! Contents within this block are managed by 'mamba init' !!
+    export MAMBA_EXE='{{ansible_user_dir}}/.local/bin/micromamba';
+    export MAMBA_ROOT_PREFIX='{{mamba_dir}}';
+    __mamba_setup="$("$MAMBA_EXE" shell hook --shell bash --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+    eval "$__mamba_setup"
+    else
+    alias micromamba="$MAMBA_EXE"  # Fallback on help from mamba activate
+    fi
+    unset __mamba_setup
+    # <<< mamba initialize <<<
+    alias mamba=micromamba
+}
+{% if has_cuda %}
+function use_cuda() {
+    export CUDAARCHS="{{cuda_arch}}"
+    export PATH="{{cuda_dir}}:$PATH"
+}
+{% endif %}
+
+
+# User specific aliases and functions
+if [ -d ~/.bashrc.d ]; then
+	for rc in ~/.bashrc.d/*; do
+		if [ -f "$rc" ]; then
+			. "$rc"
+		fi
+	done
+fi
+unset rc
+
+
+# exit early if non-interactive
+[[ $- != *i* ]] && return
+
+
+alias vim=nvim
+function o() {
+  xdg-open "$@"
+}
+
+stty werase undef
+eval "$(zoxide init bash)"
+eval "$(starship init bash)"
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+bind '\C-w:unix-filename-rubout'
+
+{{site_settings}}
+
+# ~/.bashrc
+
+

@@ -1,0 +1,281 @@
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
+end
+
+local packer_bootstrap = ensure_packer()
+
+local use = require('packer').use
+require('packer').startup(function()
+  use 'wbthomason/packer.nvim' -- Package manager
+
+  -- interface
+  use 'lifepillar/vim-solarized8' -- Colorscheme
+  use 'vim-airline/vim-airline' -- Interface
+  use 'vim-airline/vim-airline-themes' -- Interface
+
+  -- features
+  use { 'nvim-telescope/telescope.nvim', tag = '0.1.5', requires = { {'nvim-lua/plenary.nvim'} } }
+  use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
+  use 'liuchengxu/vista.vim' -- LSP file object listing
+  use 'tpope/vim-eunuch'  -- commands to manage files
+  use 'tpope/vim-fugitive' -- git integration
+  use 'tpope/vim-unimpaired' -- better default key bindings
+  use 'jpalardy/vim-slime' -- REPL integration
+
+  use 'nvim-treesitter/nvim-treesitter' -- AST aware syntax highlighting
+  use 'nvim-treesitter/playground' -- tool to study the treesitter AST
+  use 'nvim-treesitter/nvim-treesitter-textobjects' -- text objects for treesitter
+  use {'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async'} -- folds based on the treesitter AST
+
+  use 'SirVer/ultisnips' -- snippet manager, requires python
+  use 'honza/vim-snippets' -- default set of snippets
+  use 'vimwiki/vimwiki' -- wiki for notes
+{% if 'laptop' in group_names %}
+  use 'ActivityWatch/aw-watcher-vim' -- track work time
+{% endif %}
+
+  -- languages
+  use 'JuliaEditorSupport/julia-vim'
+  use 'naegelejd/vim-swig'
+  use 'Glench/Vim-Jinja2-Syntax'
+  use 'terrastruct/d2-vim'
+  if packer_bootstrap then
+    require('packer').sync()
+  end
+end)
+
+-- Mappings.
+local opts = { noremap=true, silent=true }
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+vim.keymap.set('i', 'jj', '<ESC>')
+vim.keymap.set('c', '<C-A>', '<Home>')
+vim.keymap.set('c', '<C-E>', '<End>')
+vim.keymap.set('t', '<ESC>', '<C-\\><C-n>')
+vim.cmd[[
+    cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
+]]
+
+
+
+-- options
+vim.opt.autoindent=true
+vim.opt.completeopt = vim.opt.completeopt + "noselect"
+vim.opt.cursorcolumn=true
+vim.opt.cursorline=true
+vim.opt.colorcolumn="110"
+vim.opt.expandtab=true
+vim.opt.hidden=true
+vim.opt.history=200
+vim.opt.ignorecase=true
+vim.opt.incsearch=true
+vim.opt.mouse='a'
+vim.opt.matchpairs = vim.opt.matchpairs + "<:>"
+vim.opt.number=true
+vim.opt.shiftwidth=4
+vim.opt.smartcase=true
+vim.opt.softtabstop=4
+vim.opt.spell=true
+vim.opt.spelllang="en_us"
+vim.opt.tabstop=4
+vim.opt.wildignore=vim.opt.wildignore + "*.git/*,*.hg/*,*.svn/*,*/__pycache__/*"
+vim.opt.wildmenu=true
+vim.opt.wildmode="longest:full,full"
+vim.opt.laststatus=2
+vim.opt.splitright=true
+vim.opt.makeprg='m'
+
+
+vim.g['slime_target'] = "neovim"
+vim.g["vimwiki_list"] = { {path="~/drive/journal/", syntax="markdown", ext=".md"} }
+vim.g["vimwiki_global_ext"] = 0
+
+-- style
+vim.opt.termguicolors = true
+vim.cmd [[ colorscheme solarized8 ]]
+
+
+-- telescope
+require('telescope').setup({
+    defaults = {
+        theme = "dropdown"
+    }
+})
+local telescope = require('telescope.builtin')
+local find_projects = function()
+  return telescope.find_files {
+    prompt_title = 'Projects',
+    cwd = vim.fn.expand('~/git'),
+    find_command = {'fd', '-H', '--type', 'd', '^.git$', '-x', 'dirname'}
+  }
+end
+vim.keymap.set('n', '<C-p>', telescope.git_files, {})
+vim.keymap.set('n', '<space>p', find_projects)
+
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
+local on_attach = function(client, bufnr)
+  -- Enable completion triggered by <c-x><c-o>
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  local bufopts = { noremap=true, silent=true, buffer=bufnr }
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+  vim.keymap.set('n', '<space>wl', function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, bufopts)
+  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
+  vim.keymap.set('n', '<F3>', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', 'gr', telescope.lsp_references, bufopts)
+  vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+
+  -- folding using the LSP
+  vim.o.foldcolumn = '0' -- '0' is not bad
+  vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+  vim.o.foldlevelstart = 99
+  vim.o.foldenable = true
+  vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
+  vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
+  require('ufo').setup({
+      provider_selector = function(bufnr, filetype, buftype)
+          return {'treesitter', 'indent'}
+      end
+  })
+end
+
+-- require('lspconfig')['pylsp'].setup{
+--     on_attach = on_attach,
+--     flags = lsp_flags,
+-- }
+require('lspconfig')['pyright'].setup{
+    on_attach = on_attach,
+    flags = lsp_flags,
+}
+require('lspconfig')['gopls'].setup{
+    on_attach = on_attach,
+    flags = lsp_flags,
+}
+require('lspconfig')['clangd'].setup{
+    on_attach = on_attach,
+    flags = lsp_flags,
+    settings = {
+        ["cmd"] = {"clangd", "--compile-commands-dir=./build"}
+    }
+}
+require('lspconfig')['rust_analyzer'].setup{
+    on_attach = on_attach,
+    flags = lsp_flags,
+}
+require('lspconfig')['julials'].setup{
+    on_attach = on_attach,
+}
+require('lspconfig')['cmake'].setup{
+    on_attach = on_attach,
+    flags = lsp_flags,
+}
+
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "c", "lua", "rust", "cpp", "latex", "julia", "python", "cuda", "query"},
+  sync_install = true,
+  auto_install = true,
+	highlight = {
+		enable = true
+	},
+	refactor = {
+		highlight_definitions = {
+			enable = true
+		},
+		highlight_current_scope = {
+			enable = true
+		},
+		smart_rename = {
+			enable = true,
+			keymaps = {
+				smart_rename = "grr"
+			}
+		},
+		navigation = {
+			enable = true,
+			keymaps = {
+				goto_definition = "gnd",
+				list_definitions = "gnD"
+			}
+		}
+	},
+	textobjects = {
+    lsp_interop = {
+        enable = true,
+        peek_definition_code = {
+         ["<leader>df"] = "@function.outer",
+         ["<leader>dF"] = "@class.outer",
+        },  
+    },
+    move = {
+        enable = true,
+        goto_previous_start = {
+            ["[f"] = "@function.outer",
+            ["[C"] = "@class.outer",
+        },
+        goto_next_end = {
+            ["]f"] = "@function.outer",
+            ["]C"] = "@class.outer",
+        },
+    },
+    select = {
+      enable = true,
+      keymaps = {
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["aC"] = "@class.outer",
+        ["iC"] = "@class.inner",
+        ["ac"] = "@conditional.outer",
+        ["ic"] = "@conditional.inner",
+        ["ae"] = "@block.outer",
+        ["ie"] = "@block.inner",
+        ["al"] = "@loop.outer",
+        ["il"] = "@loop.inner",
+        ["is"] = "@statement.inner",
+        ["as"] = "@statement.outer",
+        ["ad"] = "@comment.outer",
+        ["am"] = "@call.outer",
+        ["im"] = "@call.inner",
+        ["ia"] = "@parameter.inner",
+        ["aa"] = "@parameter.outer"
+      },
+    },
+    playground = {
+        enable = true,
+        updatetime = 25,
+        persist_queries = false,
+    },
+    swap = {
+      enable = true,
+      swap_next = {
+        ["<leader>a"] = "@parameter.inner",
+      },
+      swap_previous = {
+        ["<leader>A"] = "@parameter.inner",
+      },
+    },
+	},
+	ensure_installed = "all"
+}
+
+-- vim: ft=lua :

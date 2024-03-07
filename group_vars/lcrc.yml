@@ -1,0 +1,14 @@
+setup_spack_build_env: |
+  if hostname | grep "^i" &>/dev/null; then
+    echo "loading improv spack"
+    module load gcc/13.2.0
+    module load openmpi/5.0.1-gcc-13.2.0
+    source $HOME/git/spack-improv/share/spack/setup-env.sh
+    source $HOME/git/spack-improv/share/spack/spack-completion.bash
+    export clustername=improv
+  fi
+  #other LCRC Machines
+  export SPACK_USER_CONFIG_PATH="$HOME/.spack/$clustername"
+  export SPACK_USER_CACHE_PATH="$SPACK_USER_CONFIG_PATH"
+
+

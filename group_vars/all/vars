@@ -1,0 +1,4 @@
+srcgraph_token: '{{srcgraph_token_vault}}'
+hugging_face_token: '{{huggingface_token_vault}}'
+work_email: '{{work_email_vault}}'
+home_email: '{{home_email_vault}}'
