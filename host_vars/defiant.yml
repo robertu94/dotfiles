@@ -2,3 +2,6 @@
 has_cuda: true
 cuda_arch: 86
 cuda_dir: "/usr/local/cuda/bin"
+site_settings: |
+  module use /usr/share/modulefiles/
+  module load mpi/mpich-x86_64

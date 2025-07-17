@@ -1,0 +1,32 @@
+---
+- name: install desktop tools
+  community.general.flatpak:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - com.discordapp.Discord
+    - com.jgraph.drawio.desktop
+    - com.slack.Slack
+    - org.zotero.Zotero
+    - org.kde.kdenlive
+    - org.gnome.meld
+    - com.makemkv.MakeMKV
+  become: yes
+  tags:
+    - desktop
+    - desktop_apps
+- name: install developer tools
+  ansible.builtin.package:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - ardour8
+    - gimp
+    - inkscape
+    - scribus
+    - vlc
+  become: yes
+  tags:
+    - desktop
+    - desktop_apps
+

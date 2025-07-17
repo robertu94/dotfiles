@@ -9,26 +9,11 @@ setup_spack_build_env: |
        echo "loading polaris spack"
        source /lus/grand/projects/VeloC/runderwood/spack/polaris/share/spack/setup-env.sh
        module reset
+       module load craype-accel-nvidia80
        module swap PrgEnv-nvhpc PrgEnv-gnu
-       module load cudatoolkit-standalone/11.2.2
-       export PYTHONPATH=/opt/cray/pe/gcc/11.2.0/snos/share/gcc-11.2.0/python:$PYTHONPATH
+       module use /soft/modulefiles
+       module load cudatoolkit-standalone/12.5.2
        export clustername=polaris
-    elif hostname | grep theta &>/dev/null; then
-       echo "loading theta spack"
-       module reset
-       module swap PrgEnv-intel PrgEnv-gnu
-       module swap gcc/11.2.0
-       source /projects/VeloC/runderwood/spack/theta/share/spack/setup-env.sh
-       export CRAYPE_LINK_TYPE=dynamic
-       export clustername=theta
-    elif hostname | grep cooley &>/dev/null || hostname | grep cc &> /dev/null; then
-       echo "loading spack cooley"
-       soft add +gcc-8.2.0
-       soft add +cmake-3.20.4
-       soft add +cuda-11.0.2
-       soft add +mvapich2
-       source /projects/VeloC/runderwood/spack/cooley/share/spack/setup-env.sh
-       export clustername=cooley
     fi
     export SPACK_USER_CONFIG_PATH="$HOME/.spack/$clustername"
     export SPACK_USER_CACHE_PATH="$SPACK_USER_CONFIG_PATH"
@@ -41,23 +26,10 @@ site_settings: |
   export no_proxy="admin,polaris-adminvm-01,localhost,*.cm.polaris.alcf.anl.gov,polaris-*,*.polaris.alcf.anl.gov,*.alcf.anl.gov"
   if hostname -f | grep polaris &>/dev/null; then
      module reset
+     module load craype-accel-nvidia80
      module swap PrgEnv-nvhpc PrgEnv-gnu
-     module load cudatoolkit-standalone/11.2.2
-     export PYTHONPATH=/opt/cray/pe/gcc/11.2.0/snos/share/gcc-11.2.0/python:$PYTHONPATH
+     module use /soft/modulefiles
+     module load cudatoolkit-standalone/12.5.0
      export clustername=polaris
-  elif hostname | grep theta &>/dev/null; then
-     module swap PrgEnv-intel PrgEnv-gnu
-     module swap gcc/11.2.0
-     export CRAYPE_LINK_TYPE=dynamic
-     export clustername=theta
-     export HTTP_PROXY=http://theta-proxy.tmi.alcf.anl.gov:3128
-     export HTTPS_PROXY=http://theta-proxy.tmi.alcf.anl.gov:3128
-     export http_proxy=http://theta-proxy.tmi.alcf.anl.gov:3128
-     export https_proxy=http://theta-proxy.tmi.alcf.anl.gov:3128
-  elif hostname | grep cooley &>/dev/null || hostname | grep cc &> /dev/null; then
-     soft add +gcc-8.2.0
-     soft add +cmake-3.20.4
-     soft add +cuda-11.0.2
-     soft add +mvapich2
   fi
 hf_home: "/lus/eagle/projects/LLM4CS/runderwood"

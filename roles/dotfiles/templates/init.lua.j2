@@ -16,26 +16,35 @@ require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
 
   -- interface
-  use 'lifepillar/vim-solarized8' -- Colorscheme
+  use 'samharju/synthweave.nvim' -- Colorscheme
   use 'vim-airline/vim-airline' -- Interface
   use 'vim-airline/vim-airline-themes' -- Interface
 
   -- features
   use { 'nvim-telescope/telescope.nvim', tag = '0.1.5', requires = { {'nvim-lua/plenary.nvim'} } }
+
+  use "williamboman/mason.nvim" -- automatically install lsp
+  use "williamboman/mason-lspconfig.nvim" -- automatically configure lsp installed by mason
   use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
   use 'liuchengxu/vista.vim' -- LSP file object listing
   use 'tpope/vim-eunuch'  -- commands to manage files
   use 'tpope/vim-fugitive' -- git integration
   use 'tpope/vim-unimpaired' -- better default key bindings
+  use 'tpope/vim-dadbod' -- database
+  use 'kristijanhusak/vim-dadbod-ui' -- database
   use 'jpalardy/vim-slime' -- REPL integration
+  use 'stevearc/oil.nvim' -- file browser
 
   use 'nvim-treesitter/nvim-treesitter' -- AST aware syntax highlighting
   use 'nvim-treesitter/playground' -- tool to study the treesitter AST
   use 'nvim-treesitter/nvim-treesitter-textobjects' -- text objects for treesitter
   use {'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async'} -- folds based on the treesitter AST
 
-  use 'SirVer/ultisnips' -- snippet manager, requires python
-  use 'honza/vim-snippets' -- default set of snippets
+  use({
+      "L3MON4D3/LuaSnip",
+      tag = "v2.*",
+      run = "make install_jsregexp"
+  })
   use 'vimwiki/vimwiki' -- wiki for notes
 {% if 'laptop' in group_names %}
   use 'ActivityWatch/aw-watcher-vim' -- track work time
@@ -50,6 +59,83 @@ require('packer').startup(function()
     require('packer').sync()
   end
 end)
+
+-- snippets
+local ls = require("luasnip")
+local s = ls.snippet
+local t = ls.text_node
+local i = ls.insert_node
+local c = ls.choice_node
+local d = ls.dynamic_node
+local extras = require("luasnip.extras")
+local rep = extras.rep
+vim.keymap.set({"i"}, "<C-Space>", function() ls.expand() end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(1) end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump(-1) end, {silent = true})
+vim.keymap.set({"i", "s"}, "<C-E>", function()
+	if ls.choice_active() then
+		ls.change_choice(1)
+	end
+end, {silent = true})
+ls.add_snippets('cpp', {
+	s("main", {
+		t("int main("),
+		c(2, {
+            t(""),
+            t("int argc, char* argv[]")
+        }),
+        t({") {","\t"}),
+        i(1),
+        t({"", "}", ""})
+	}),
+    s("if", {
+        t("if("),
+        i(1),
+        t({") {", ""}),
+        i(2),
+        t({"}", ""}),
+    }),
+    s("fore", {
+        t("for("),
+        i(2, "auto i :"),
+        i(1, "container"),
+        t({") {", ""}),
+        i(3),
+        t({"}", ""}),
+    }),
+    s("fori", {
+        t("for("),
+        t("size_t "),
+        i(1, "i"),
+        t("= 0; "),
+        rep(1),
+        t(" < "),
+        i(2, "N"),
+        t("; ++"),
+        rep(1),
+        t({") {", "\t"}),
+        i(3),
+        t({"", "}", ""}),
+    }),
+    s("inc", {
+        t("#include <"),
+        i(1, "iostream"),
+        t({">",""})
+    }),
+    s("Inc", {
+        t("#include \""),
+        i(1),
+        t({"\"",""})
+    }),
+    s("cout", {
+        t("std::cout << "),
+        i(1),
+        t({" << std::endl;",""})
+    })
+})
+ls.add_snippets('python', {
+    s("#!", {t("#!/usr/bin/env python")})
+})
 
 -- Mappings.
 local opts = { noremap=true, silent=true }
@@ -101,7 +187,7 @@ vim.g["vimwiki_global_ext"] = 0
 
 -- style
 vim.opt.termguicolors = true
-vim.cmd [[ colorscheme solarized8 ]]
+vim.cmd [[ colorscheme synthweave-transparent ]]
 
 
 -- telescope
@@ -160,11 +246,17 @@ local on_attach = function(client, bufnr)
   })
 end
 
--- require('lspconfig')['pylsp'].setup{
---     on_attach = on_attach,
---     flags = lsp_flags,
--- }
-require('lspconfig')['pyright'].setup{
+require("oil").setup()
+require("mason").setup()
+require("mason-lspconfig").setup {
+    ensure_installed = {"basedpyright", "gopls", "ts_ls", "julials", "cmake", "texlab"}
+}
+
+require('lspconfig')['ts_ls'].setup{
+    on_attach = on_attach,
+    flags = lsp_flags,
+}
+require('lspconfig')['basedpyright'].setup{
     on_attach = on_attach,
     flags = lsp_flags,
 }
@@ -192,6 +284,9 @@ require('lspconfig')['cmake'].setup{
 }
 
 require'nvim-treesitter.configs'.setup {
+  cond = function(lang, buffer)
+      return not(lang == "xml")
+  end,
   ensure_installed = { "c", "lua", "rust", "cpp", "latex", "julia", "python", "cuda", "query"},
   sync_install = true,
   auto_install = true,

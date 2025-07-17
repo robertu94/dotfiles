@@ -1,0 +1,19 @@
+spack_home: "/lus/flare/projects/AuroraGPT/runderwood/spack/{{inventory_hostname}}"
+hf_home: "/lus/flare/projects/AuroraGPT/runderwood/huggingface"
+site_settings: |
+  if [[ ! "${HOSTNAME}" =~ aurora-uan ]]; then
+    export HTTP_PROXY="http://proxy.alcf.anl.gov:3128"
+    export HTTPS_PROXY="http://proxy.alcf.anl.gov:3128"
+    export http_proxy="http://proxy.alcf.anl.gov:3128"
+    export https_proxy="http://proxy.alcf.anl.gov:3128"
+    export ftp_proxy="http://proxy.alcf.anl.gov:3128"
+    export no_proxy="admin,polaris-adminvm-01,localhost,*.cm.polaris.alcf.anl.gov,polaris-*,*.polaris.alcf.anl.gov,*.alcf.anl.gov"
+  fi
+  if hostname -f | grep aurora &>/dev/null; then
+     export clustername=aurora
+  fi
+ssh_site_settings: |
+  Match originalhost github.com exec "hostname -s | (grep -qv aurora-uan)"
+  Port 443
+  hostname ssh.github.com
+  ProxyCommand socat - PROXY:proxy.alcf.anl.gov:%h:%p,proxyport=3128

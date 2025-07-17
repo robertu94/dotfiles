@@ -9,6 +9,7 @@
     - '{{ansible_user_dir}}/.config/git'
     - '{{ansible_user_dir}}/.config/nvim'
     - '{{ansible_user_dir}}/.local'
+    - '{{ansible_user_dir}}/.ssh/control_channels'
     - '{{ansible_user_dir}}/.local/bin'
     - '{{ansible_user_dir}}/.local/cache'
     - '{{ansible_user_dir}}/git'
@@ -20,6 +21,7 @@
     - shell
     - shellcmd
     - shellconfig
+    - dotfiles
 - name: check nvim
   shell: 'which nvim'
   ignore_errors: yes
@@ -27,6 +29,7 @@
   changed_when: false
   tags:
     - nvim
+    - dotfiles
 - name: install nvim
   unarchive:
     src: 'https://github.com/neovim/neovim/releases/download/v0.9.5/nvim-linux64.tar.gz'
@@ -37,6 +40,7 @@
   when: nvim_installed != 0
   tags:
     - nvim
+    - dotfiles
 - name: setup various dotfiles
   template:
     src: '{{item.src}}'
@@ -55,6 +59,7 @@
     - shell
     - shellcmd
     - shellconfig
+    - dotfiles
 - name: install rust based commands
   import_tasks: curl_install.yaml
   vars:
@@ -63,6 +68,16 @@
     extra_args: '--profile minimal --default-toolchain stable -y'
   tags:
     - rust
+    - dotfiles
+- name: install julia commands
+  import_tasks: curl_install.yaml
+  vars:
+    name: 'julia'
+    src: 'https://install.julialang.org'
+    extra_args: '--yes'
+  tags:
+    - rust
+    - dotfiles
 - name: 'check if cargo installed'
   shell: 'which cargo'
   ignore_errors: true
@@ -70,6 +85,7 @@
   changed_when: false
   tags:
     - rust
+    - dotfiles
 - name: install starship
   import_tasks: curl_install.yaml
   vars:
@@ -80,6 +96,7 @@
     - rust
     - shell
     - shellcmd
+    - dotfiles
 - name: install rust based commands
   include_tasks: cargo_install.yaml
   vars:
@@ -96,6 +113,7 @@
   tags:
     - rust
     - shellcmd
+    - dotfiles
 - name: check dagger installed
   shell: 'which dagger'
   changed_when: no
@@ -104,6 +122,7 @@
   tags:
     - dagger
     - shellcmd
+    - dotfiles
 - name: download dagger
   get_url:
     url: https://dl.dagger.io/dagger/install.sh
@@ -113,6 +132,7 @@
   tags:
     - dagger
     - shellcmd
+    - dotfiles
 - name: install dagger
   shell: '{{ansible_user_dir}}/.local/cache/dagger.sh'
   environment:
@@ -121,10 +141,14 @@
   tags:
     - dagger
     - shellcmd
+    - dotfiles
 - name: install git-lfs
   copy:
     src: 'git-lfs'
     dest: '{{ansible_user_dir}}/.local/bin/git-lfs'
+  tags:
+    - shellcmd
+    - dotfiles
 - name: check pip installed
   shell: 'which pip3'
   ignore_errors: yes
@@ -132,6 +156,7 @@
   changed_when: false
   tags:
     - shellcmd
+    - dotfiles
 - name: install m
   pip:
     name: git+http://github.com/robertu94/m
@@ -139,6 +164,7 @@
   when: pip_installed.rc == 0
   tags:
     - shellcmd
+    - dotfiles
 - name: download spack
   git:
     repo: 'https://github.com/spack/spack'
@@ -148,6 +174,7 @@
   tags:
     - shellcmd
     - spack
+    - dotfiles
 - name: download robertu94 spack
   git:
     repo: 'https://github.com/robertu94/spack_packages'
@@ -157,6 +184,7 @@
   tags:
     - shellcmd
     - spack
+    - dotfiles
 - name: download fzf
   git:
     repo: https://github.com/junegunn/fzf.git
@@ -166,6 +194,7 @@
   tags:
     - shell
     - shellcmd
+    - dotfiles
 - name: install mamba 
   import_tasks: curl_install.yaml
   vars:
@@ -179,3 +208,4 @@
   tags:
     - mamba
     - shellcmd
+    - dotfiles

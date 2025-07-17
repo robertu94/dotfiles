@@ -1,0 +1,74 @@
+---
+- name: add 3rd party repos
+  ansible.builtin.get_url:
+    url: "{{item.url}}"
+    dest: "{{item.dest}}"
+  with_items:
+    - url: https://download.docker.com/linux/fedora/docker-ce.repo
+      dest: /etc/yum.repos.d/docker-ce.repo
+    - url: https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+      dest: /etc/yum.repos.d/tailscale.repo
+  become: yes
+  tags:
+    - developer
+    - developer_repos
+- name: install 3rd party copr repos
+  community.general.copr:
+    name: pgdev/ghostty
+    state: enabled
+  become: yes
+  tags:
+    - developer
+    - developer_repos
+- name: install developer tools
+  ansible.builtin.package:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - restic
+    - neovim
+    - hugo
+    - ghostty
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin 
+    - docker-compose-plugin
+    - perf
+    - gcc
+    - gcc-c++
+    - gcc-gfortran
+    - gdb
+    - gdb-gdbserver
+    - git
+    - clang-devel
+    - flang
+    - lld
+    - latexmk
+    - uv
+    - tailscale
+  become: yes
+  tags:
+    - developer
+    - developer_tools
+- name: enable developer services
+  ansible.builtin.service:
+    name: "{{item}}"
+    state: started
+    enabled: yes
+  with_items:
+    - tailscale
+    - docker.socket
+  become: yes
+  tags:
+    - developer
+    - developer_services
+- name: configure firewall for tailscale
+  ansible.posix.firewalld:
+    zone: trusted
+    interface: tailscale0
+    state: enabled
+  tags:
+    - developer
+    - developer_services
+

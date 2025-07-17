@@ -7,7 +7,6 @@ HOST login-gce
   Hostname logins.cels.anl.gov 
   ControlMaster auto
   ControlPersist yes
-  ProxyJump bebop
   LogLevel FATAL
 
 Host nomachine nomachine.cels.anl.gov
@@ -19,6 +18,12 @@ Host nomachine nomachine.cels.anl.gov
 Host perlmutter
   User robertu
   Hostname perlmutter-p1.nersc.gov
+Host agpt
+  User runderwood
+  Hostname agpt-questions-vmw-01
+  ProxyJump login-gce
+  ForwardX11Trusted yes 
+  DynamicForward 10106
 Host gce
   User runderwood
   Hostname homes.cels.anl.gov
@@ -51,15 +56,29 @@ HOST xsede
   User tg860088
   HostName "login.xsede.org"
 
+Host logins.lcrc.anl.gov
+  HostName logins.lcrc.anl.gov
+  User runderwood
 HOST improv
   User runderwood
   HostName "improv.lcrc.anl.gov"
+  ProxyJump logins.lcrc.anl.gov
+HOST crossover
+  User runderwood
+  HostName "crossover.lcrc.anl.gov"
+  ProxyJump logins.lcrc.anl.gov
+HOST chrysalis
+  User runderwood
+  HostName "chrysalis.lcrc.anl.gov"
+  ProxyJump logins.lcrc.anl.gov
 HOST swing
   User runderwood
   HostName "swing.lcrc.anl.gov"
+  ProxyJump logins.lcrc.anl.gov
 HOST bebop
   User runderwood
   HostName "bebop.lcrc.anl.gov"
+  ProxyJump logins.lcrc.anl.gov
 HOST blues
   User ac.underwoo
   HostName "blues.lcrc.anl.gov"
@@ -70,6 +89,9 @@ HOST polaris
   HostName "polaris.alcf.anl.gov"
   ControlMaster auto
   ControlPersist yes
+HOST sophia
+  User runderwood
+  HostName "sophia.alcf.anl.gov"
 HOST theta
   User runderwood
   HostName "theta.alcf.anl.gov"
@@ -99,8 +121,7 @@ HOST frontier
   HostName "frontier.olcf.ornl.gov"
 Host aurora
     User runderwood
-    HostName login.aurora.alcf.anl.gov
-    ProxyCommand ssh runderwood@bastion.alcf.anl.gov -q -W %h:%p
+    HostName aurora.alcf.anl.gov
 Host bastion.alcf.anl.gov
      user runderwood
 HOST *.sunspot.alcf.anl.gov sunspot.alcf.anl.gov
@@ -127,6 +148,11 @@ Host delta-ts
   User runderwood
   Hostname delta.tail9b24d.ts.net
 
+HOST spring8
+  User runderwood
+  HostName "xhpcfep.hpc.spring8.or.jp"
+  ForwardX11 yes 
+  RemoteForward 9999
 
 HOST slacc
   User robertu
@@ -157,3 +183,4 @@ HOST *
 	ForwardAgent no
 	ForwardX11 no
 
+{{ ssh_site_settings |  default('') }}

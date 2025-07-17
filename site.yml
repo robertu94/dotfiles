@@ -3,3 +3,8 @@
   strategy: free
   roles:
     - dotfiles
+- hosts: defiant
+  strategy: free
+  roles:
+    - desktop
+    - developer
