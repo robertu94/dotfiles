@@ -8,10 +8,13 @@
       dest: /etc/yum.repos.d/docker-ce.repo
     - url: https://pkgs.tailscale.com/stable/fedora/tailscale.repo
       dest: /etc/yum.repos.d/tailscale.repo
+    - url: https://cli.github.com/packages/rpm/gh-cli.repo
+      dest: /etc/yum.repos.d/gh-cli.repo
   become: yes
   tags:
     - developer
     - developer_repos
+  when: "{{ ansible_facts['os_family'] == Linux }}"
 - name: install 3rd party copr repos
   community.general.copr:
     name: pgdev/ghostty
@@ -20,31 +23,36 @@
   tags:
     - developer
     - developer_repos
+  when: "{{ ansible_facts['os_family'] == Linux }}"
+  # on MacOS, install XCode
 - name: install developer tools
   ansible.builtin.package:
     name: "{{item}}"
     state: present
   with_items:
+    - gh
+    - ipmitool
     - restic
     - neovim
     - hugo
     - ghostty
-    - docker-ce
-    - docker-ce-cli
-    - containerd.io
-    - docker-buildx-plugin 
-    - docker-compose-plugin
-    - perf
+    - docker-ce # docker
+    - docker-ce-cli # docker
+    - containerd.io # containerd
+    - docker-buildx-plugin  # docker-buildx
+    - docker-compose-plugin # docker-compose
+    - perf # no direct equivalent
     - gcc
-    - gcc-c++
-    - gcc-gfortran
-    - gdb
-    - gdb-gdbserver
+    - gcc-c++ # part of gcc
+    - gcc-gfortran # part of gcc
+    - gdb # needs a custom configuration file based on OS debuginfod not supported
+    - gdb-gdbserver # part of gdb?
     - git
-    - clang-devel
+    - clang-devel # part of clang?
     - flang
     - lld
     - latexmk
+    - texlive-scheme-medium #just texlive
     - uv
     - tailscale
   become: yes
@@ -58,16 +66,17 @@
     enabled: yes
   with_items:
     - tailscale
-    - docker.socket
+    - docker.socket # does this need to be done differently?
   become: yes
   tags:
     - developer
     - developer_services
 - name: configure firewall for tailscale
-  ansible.posix.firewalld:
+  ansible.posix.firewalld: # does this need to be done differently?
     zone: trusted
     interface: tailscale0
     state: enabled
+  when: "{{ ansible_facts['os_family'] == Linux }}"
   tags:
     - developer
     - developer_services

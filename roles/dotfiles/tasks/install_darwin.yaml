@@ -1,0 +1,20 @@
+- name: install mac packages
+  community.general.homebrew:
+    name: '{{item}}'
+    state: present
+  loop:
+    - 'neovim'
+    - 'rustup'
+    - 'juliaup'
+    - 'dagger'
+    - 'starship'
+    - 'zoxide'
+    - 'difftastic'
+    - 'fd'
+    - 'dust'
+    - 'sccache'
+    - 'git-lfs'
+    - 'fzf'
+    - 'uv'
+  tags:
+    - dotfiles

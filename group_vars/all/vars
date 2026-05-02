@@ -1,4 +1,6 @@
 srcgraph_token: '{{srcgraph_token_vault}}'
 hugging_face_token: '{{huggingface_token_vault}}'
+restic_password: '{{restic_password_vault}}'
 work_email: '{{work_email_vault}}'
 home_email: '{{home_email_vault}}'
+gdb_init: ""

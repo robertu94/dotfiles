@@ -1,0 +1,28 @@
+---
+- name: create restic configuration directory
+  file:
+    state: directory
+    path:  '{{item}}'
+  loop:
+    - "{{ansible_facts['user_dir']}}/.config/restic/"
+    - "{{ansible_facts['user_dir']}}/.local/bin/"
+  tags: backup
+- name: install backup password
+  copy:
+    content: '{{restic_password}}'
+    dest: "{{ansible_facts['user_dir']}}/.config/restic/password"
+    mode: 0600
+  tags: backup
+- name: install backup excludes file
+  copy:
+    src: excludes.txt
+    dest: "{{ansible_facts['user_dir']}}/.config/restic/"
+    mode: 0600
+  tags: backup
+- name: install backup script
+  copy:
+    src: backup.sh
+    dest: "{{ansible_facts['user_dir']}}/.local/bin/"
+    mode: 0700
+  tags: backup
+

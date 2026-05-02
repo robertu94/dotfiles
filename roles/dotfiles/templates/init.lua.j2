@@ -1,74 +1,64 @@
-local ensure_packer = function()
-  local fn = vim.fn
-  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-  if fn.empty(fn.glob(install_path)) > 0 then
-    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.cmd [[packadd packer.nvim]]
-    return true
-  end
-  return false
-end
-
-local packer_bootstrap = ensure_packer()
-
-local use = require('packer').use
-require('packer').startup(function()
-  use 'wbthomason/packer.nvim' -- Package manager
-
   -- interface
-  use 'samharju/synthweave.nvim' -- Colorscheme
-  use 'vim-airline/vim-airline' -- Interface
-  use 'vim-airline/vim-airline-themes' -- Interface
+vim.pack.add({
+  -- Color scheme
+  'https://github.com/ellisonleao/gruvbox.nvim',
+  -- Status line
+  'https://github.com/vim-airline/vim-airline', -- Interface
+  'https://github.com/vim-airline/vim-airline-themes', -- Interface theme
 
-  -- features
-  use { 'nvim-telescope/telescope.nvim', tag = '0.1.5', requires = { {'nvim-lua/plenary.nvim'} } }
+  --LSP
+  "https://github.com/williamboman/mason.nvim", -- automatically install lsp
+  "https://github.com/neovim/nvim-lspconfig", -- dependency for mason-lspconfig
+  "https://github.com/williamboman/mason-lspconfig.nvim", -- automatically configure lsp installed by mason
+  'https://github.com/liuchengxu/vista.vim', -- LSP file object listing
 
-  use "williamboman/mason.nvim" -- automatically install lsp
-  use "williamboman/mason-lspconfig.nvim" -- automatically configure lsp installed by mason
-  use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
-  use 'liuchengxu/vista.vim' -- LSP file object listing
-  use 'tpope/vim-eunuch'  -- commands to manage files
-  use 'tpope/vim-fugitive' -- git integration
-  use 'tpope/vim-unimpaired' -- better default key bindings
-  use 'tpope/vim-dadbod' -- database
-  use 'kristijanhusak/vim-dadbod-ui' -- database
-  use 'jpalardy/vim-slime' -- REPL integration
-  use 'stevearc/oil.nvim' -- file browser
+  --Commands
+  'https://github.com/tpope/vim-eunuch',  -- commands to manage files
+  'https://github.com/tpope/vim-fugitive', -- git integration
+  'https://github.com/tpope/vim-unimpaired', -- better default key bindings
 
-  use 'nvim-treesitter/nvim-treesitter' -- AST aware syntax highlighting
-  use 'nvim-treesitter/playground' -- tool to study the treesitter AST
-  use 'nvim-treesitter/nvim-treesitter-textobjects' -- text objects for treesitter
-  use {'kevinhwang91/nvim-ufo', requires = 'kevinhwang91/promise-async'} -- folds based on the treesitter AST
+  -- Databases
+  'https://github.com/tpope/vim-dadbod', -- database
+  'https://github.com/kristijanhusak/vim-dadbod-ui', -- database
 
-  use({
-      "L3MON4D3/LuaSnip",
-      tag = "v2.*",
-      run = "make install_jsregexp"
-  })
-  use 'vimwiki/vimwiki' -- wiki for notes
-{% if 'laptop' in group_names %}
-  use 'ActivityWatch/aw-watcher-vim' -- track work time
-{% endif %}
+  -- Interpreters
+  'https://github.com/jpalardy/vim-slime', -- REPL integration
 
-  -- languages
-  use 'JuliaEditorSupport/julia-vim'
-  use 'naegelejd/vim-swig'
-  use 'Glench/Vim-Jinja2-Syntax'
-  use 'terrastruct/d2-vim'
-  if packer_bootstrap then
-    require('packer').sync()
-  end
-end)
+  -- File Browser
+  'https://github.com/stevearc/oil.nvim', -- file browser
+
+  -- File Picker
+  'https://github.com/nvim-lua/plenary.nvim', -- dependency for telescope
+  'https://github.com/nvim-telescope/telescope-fzf-native.nvim', -- dependency for telescope
+  { src='https://github.com/nvim-telescope/telescope.nvim', version='v0.2.2' }, -- finder
+
+  -- Snippets
+  { src = "https://github.com/L3MON4D3/LuaSnip", version = "v2.5.0", },
+
+  -- Activity Watch
+  'https://github.com/ActivityWatch/aw-watcher-vim', -- track work time
+
+  -- Language Support
+  'https://github.com/JuliaEditorSupport/julia-vim',  -- julia languages
+  'https://github.com/naegelejd/vim-swig',-- swig languages
+  'https://github.com/Glench/Vim-Jinja2-Syntax',-- jinja languages
+  'https://github.com/terrastruct/d2-vim', -- d2lang
+})
+local pack_hooks = function(ev) 
+    local name, kind = ev.data.spec.name, ev.data.kind
+    if (kind == 'install' or kind == 'update') then
+        if(name == "telescope-fzf-native.nvim") then
+            vim.system({'make'}, { cwd = ev.data.path })
+        end
+        if(name == "L3MON4D3/LuaSnip") then
+            vim.system({'make install_jsregexp'}, { cwd = ev.data.path })
+        end
+    end
+end
+vim.api.nvim_create_autocmd('PackChanged', {callback = pack_hooks})
 
 -- snippets
 local ls = require("luasnip")
-local s = ls.snippet
-local t = ls.text_node
-local i = ls.insert_node
-local c = ls.choice_node
-local d = ls.dynamic_node
-local extras = require("luasnip.extras")
-local rep = extras.rep
 vim.keymap.set({"i"}, "<C-Space>", function() ls.expand() end, {silent = true})
 vim.keymap.set({"i", "s"}, "<C-J>", function() ls.jump(1) end, {silent = true})
 vim.keymap.set({"i", "s"}, "<C-L>", function() ls.jump(-1) end, {silent = true})
@@ -77,71 +67,10 @@ vim.keymap.set({"i", "s"}, "<C-E>", function()
 		ls.change_choice(1)
 	end
 end, {silent = true})
-ls.add_snippets('cpp', {
-	s("main", {
-		t("int main("),
-		c(2, {
-            t(""),
-            t("int argc, char* argv[]")
-        }),
-        t({") {","\t"}),
-        i(1),
-        t({"", "}", ""})
-	}),
-    s("if", {
-        t("if("),
-        i(1),
-        t({") {", ""}),
-        i(2),
-        t({"}", ""}),
-    }),
-    s("fore", {
-        t("for("),
-        i(2, "auto i :"),
-        i(1, "container"),
-        t({") {", ""}),
-        i(3),
-        t({"}", ""}),
-    }),
-    s("fori", {
-        t("for("),
-        t("size_t "),
-        i(1, "i"),
-        t("= 0; "),
-        rep(1),
-        t(" < "),
-        i(2, "N"),
-        t("; ++"),
-        rep(1),
-        t({") {", "\t"}),
-        i(3),
-        t({"", "}", ""}),
-    }),
-    s("inc", {
-        t("#include <"),
-        i(1, "iostream"),
-        t({">",""})
-    }),
-    s("Inc", {
-        t("#include \""),
-        i(1),
-        t({"\"",""})
-    }),
-    s("cout", {
-        t("std::cout << "),
-        i(1),
-        t({" << std::endl;",""})
-    })
-})
-ls.add_snippets('python', {
-    s("#!", {t("#!/usr/bin/env python")})
-})
+
 
 -- Mappings.
 local opts = { noremap=true, silent=true }
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 vim.keymap.set('i', 'jj', '<ESC>')
 vim.keymap.set('c', '<C-A>', '<Home>')
@@ -150,7 +79,6 @@ vim.keymap.set('t', '<ESC>', '<C-\\><C-n>')
 vim.cmd[[
     cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 ]]
-
 
 
 -- options
@@ -181,14 +109,13 @@ vim.opt.splitright=true
 vim.opt.makeprg='m'
 
 
+-- slime
+vim.g['slime_bracketed_paste'] = 1
 vim.g['slime_target'] = "neovim"
-vim.g["vimwiki_list"] = { {path="~/drive/journal/", syntax="markdown", ext=".md"} }
-vim.g["vimwiki_global_ext"] = 0
 
 -- style
 vim.opt.termguicolors = true
-vim.cmd [[ colorscheme synthweave-transparent ]]
-
+vim.cmd [[ colorscheme gruvbox ]]
 
 -- telescope
 require('telescope').setup({
@@ -207,170 +134,33 @@ end
 vim.keymap.set('n', '<C-p>', telescope.git_files, {})
 vim.keymap.set('n', '<space>p', find_projects)
 
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-  -- Mappings.
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts)
-  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<F2>', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<F3>', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', 'gr', telescope.lsp_references, bufopts)
-  vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
-
-  -- folding using the LSP
-  vim.o.foldcolumn = '0' -- '0' is not bad
-  vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
-  vim.o.foldlevelstart = 99
-  vim.o.foldenable = true
-  vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
-  vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
-  require('ufo').setup({
-      provider_selector = function(bufnr, filetype, buftype)
-          return {'treesitter', 'indent'}
-      end
-  })
-end
-
 require("oil").setup()
 require("mason").setup()
 require("mason-lspconfig").setup {
-    ensure_installed = {"basedpyright", "gopls", "ts_ls", "julials", "cmake", "texlab"}
+    ensure_installed = {"basedpyright", "gopls", "ts_ls", "julials", "texlab", "lua_ls", "vimls"}
 }
-
-require('lspconfig')['ts_ls'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-}
-require('lspconfig')['basedpyright'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-}
-require('lspconfig')['gopls'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-}
-require('lspconfig')['clangd'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-    settings = {
-        ["cmd"] = {"clangd", "--compile-commands-dir=./build"}
-    }
-}
-require('lspconfig')['rust_analyzer'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-}
-require('lspconfig')['julials'].setup{
-    on_attach = on_attach,
-}
-require('lspconfig')['cmake'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-}
-
-require'nvim-treesitter.configs'.setup {
-  cond = function(lang, buffer)
-      return not(lang == "xml")
+vim.lsp.config["lua_ls"] = {
+  on_init = function(client)
+    if client.workspace_folders then
+      local path = client.workspace_folders[1].name
+      if path ~= vim.fn.stdpath('config') and (vim.uv.fs_stat(path..'/.luarc.json') or vim.uv.fs_stat(path..'/.luarc.jsonc')) then
+        return
+      end
+    end
+   client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+      runtime = { version = 'LuaJIT' },
+      workspace = {
+        checkThirdParty = false,
+        library = {
+          vim.env.VIMRUNTIME
+        }
+      }
+    })
   end,
-  ensure_installed = { "c", "lua", "rust", "cpp", "latex", "julia", "python", "cuda", "query"},
-  sync_install = true,
-  auto_install = true,
-	highlight = {
-		enable = true
-	},
-	refactor = {
-		highlight_definitions = {
-			enable = true
-		},
-		highlight_current_scope = {
-			enable = true
-		},
-		smart_rename = {
-			enable = true,
-			keymaps = {
-				smart_rename = "grr"
-			}
-		},
-		navigation = {
-			enable = true,
-			keymaps = {
-				goto_definition = "gnd",
-				list_definitions = "gnD"
-			}
-		}
-	},
-	textobjects = {
-    lsp_interop = {
-        enable = true,
-        peek_definition_code = {
-         ["<leader>df"] = "@function.outer",
-         ["<leader>dF"] = "@class.outer",
-        },  
-    },
-    move = {
-        enable = true,
-        goto_previous_start = {
-            ["[f"] = "@function.outer",
-            ["[C"] = "@class.outer",
-        },
-        goto_next_end = {
-            ["]f"] = "@function.outer",
-            ["]C"] = "@class.outer",
-        },
-    },
-    select = {
-      enable = true,
-      keymaps = {
-        ["af"] = "@function.outer",
-        ["if"] = "@function.inner",
-        ["aC"] = "@class.outer",
-        ["iC"] = "@class.inner",
-        ["ac"] = "@conditional.outer",
-        ["ic"] = "@conditional.inner",
-        ["ae"] = "@block.outer",
-        ["ie"] = "@block.inner",
-        ["al"] = "@loop.outer",
-        ["il"] = "@loop.inner",
-        ["is"] = "@statement.inner",
-        ["as"] = "@statement.outer",
-        ["ad"] = "@comment.outer",
-        ["am"] = "@call.outer",
-        ["im"] = "@call.inner",
-        ["ia"] = "@parameter.inner",
-        ["aa"] = "@parameter.outer"
-      },
-    },
-    playground = {
-        enable = true,
-        updatetime = 25,
-        persist_queries = false,
-    },
-    swap = {
-      enable = true,
-      swap_next = {
-        ["<leader>a"] = "@parameter.inner",
-      },
-      swap_previous = {
-        ["<leader>A"] = "@parameter.inner",
-      },
-    },
-	},
-	ensure_installed = "all"
+  settings = {
+    Lua = {}
+  }
 }
+
 
 -- vim: ft=lua :

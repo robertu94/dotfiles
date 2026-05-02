@@ -10,17 +10,21 @@
     - org.zotero.Zotero
     - org.kde.kdenlive
     - org.gnome.meld
-    - com.makemkv.MakeMKV
+    - com.makemkv.MakeMKV # does not pass gatekeeper, not needed on work machine
+    # add Drafts, Caffine, Grammarly, uBlockOrigin for Macos
   become: yes
   tags:
     - desktop
     - desktop_apps
-- name: install developer tools
+- name: install desktop tools
   ansible.builtin.package:
     name: "{{item}}"
     state: present
   with_items:
-    - ardour8
+    - ardour # what is the alternative?
+    - carla  # what is the alternative?
+    - lsp-plugins-vst  # what is the alternative?
+    - lsp-plugins # what is the alternative?
     - gimp
     - inkscape
     - scribus
@@ -29,4 +33,4 @@
   tags:
     - desktop
     - desktop_apps
-
+# TODO add activitywatch.  Need to find a way to share configuration file

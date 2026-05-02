@@ -1,0 +1,52 @@
+# --- Spack ---
+*/opt/spack/*
+*/var/spack/cache/*
+
+# --- Python virtual environments ---
+*/.venv/*
+*/venv/*
+*/env/*
+*/.env/*
+*/virtualenv/*
+*/__pycache__/*
+*.pyc
+
+# --- CMake / build systems ---
+*/build/*
+*/build-*/
+*/cmake-build-*/
+*/CMakeFiles/*
+CMakeCache.txt
+compile_commands.json
+
+# --- Generic build artifacts ---
+*.o
+*.so
+*.a
+*.out
+*.exe
+
+# --- Node / JS ---
+*/node_modules/*
+*/dist/*
+*/.next/*
+*/coverage/*
+
+# --- Temp / caches ---
+/tmp/*
+*/tmp/*
+*.tmp
+*.cache
+*/.cache/*
+*/.pytest_cache/*
+*/.mypy_cache/*
+
+# --- Editors ---
+*.swp
+*.swo
+*~
+*/.idea/*
+*/.vscode/*
+
+# --- data directories ---
+git/datasets/*

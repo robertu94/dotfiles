@@ -1,2 +1,2 @@
 ---
-spack_home: "{{ansible_user_dir}}/git/spack-{{inventory_hostname}}"
+spack_home: "{{ansible_facts['user_dir']}}/git/spack-{{inventory_hostname}}"

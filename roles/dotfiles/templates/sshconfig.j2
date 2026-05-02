@@ -52,6 +52,10 @@ HOST voyager
 HOST defiant
   USER runderwood
 
+HOST anvil
+  User x-runderwood
+  HostName "anvil.rcac.purdue.edu"
+
 HOST xsede
   User tg860088
   HostName "login.xsede.org"
@@ -183,4 +187,4 @@ HOST *
 	ForwardAgent no
 	ForwardX11 no
 
-{{ ssh_site_settings |  default('') }}
+    {{ ansible_facts["ssh_site_settings"] |  default('') }}

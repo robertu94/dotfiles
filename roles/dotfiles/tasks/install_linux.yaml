@@ -1,0 +1,132 @@
+- name: check nvim
+  shell: 'which nvim'
+  ignore_errors: yes
+  register: nvim_installed
+  changed_when: false
+  tags:
+    - nvim
+    - dotfiles
+- name: install nvim
+  unarchive:
+    src: 'https://github.com/neovim/neovim/releases/download/v0.12.1/nvim-linux-x86_64.tar.gz'
+    dest: "{{ansible_facts['user_dir']}}/.local/"
+    remote_src: yes
+    extra_opts:
+      - "--strip-components=1"
+  when: nvim_installed != 0
+  tags:
+    - nvim
+    - dotfiles
+- name: install rust based commands
+  import_tasks: curl_install.yaml
+  vars:
+    pkg_name: 'cargo'
+    src: 'https://sh.rustup.rs'
+    extra_args: '--profile minimal --default-toolchain stable -y'
+  tags:
+    - rust
+    - dotfiles
+- name: install julia commands
+  import_tasks: curl_install.yaml
+  vars:
+    pkg_name: 'julia'
+    src: 'https://install.julialang.org'
+    extra_args: '--yes'
+  tags:
+    - rust
+    - dotfiles
+- name: 'check if cargo installed'
+  shell: 'which cargo'
+  ignore_errors: true
+  register: cargo_installed
+  changed_when: false
+  tags:
+    - rust
+    - dotfiles
+- name: install starship
+  import_tasks: curl_install.yaml
+  vars:
+    pkg_name: 'starship'
+    src: 'https://starship.rs/install.sh'
+    extra_args: "--bin-dir {{ansible_facts['user_dir']}}/.local/bin --force"
+  tags:
+    - rust
+    - shell
+    - shellcmd
+    - dotfiles
+- name: install rust based commands
+  include_tasks: cargo_install.yaml
+  vars:
+    pkg_name: '{{item.name}}'
+    pkg: '{{item.pkg}}'
+  loop:
+    - { name: 'zoxide', pkg: 'zoxide' }
+    - { name: 'difft', pkg: 'difftastic' }
+    - { name: 'fd', pkg: 'fd-find' }
+    - { name: 'dust', pkg: 'du-dust' }
+    - { name: 'mpigdb', pkg: 'mpigdb' }
+    - { name: 'sccache', pkg: 'sccache' }
+  when: cargo_installed.rc == 0
+  tags:
+    - rust
+    - shellcmd
+    - dotfiles
+- name: check dagger installed
+  shell: 'which dagger'
+  changed_when: no
+  ignore_errors: true
+  register: dagger_installed
+  tags:
+    - dagger
+    - shellcmd
+    - dotfiles
+- name: download dagger
+  get_url:
+    url: https://dl.dagger.io/dagger/install.sh
+    dest: "{{ansible_facts['user_dir']}}/.local/cache/dagger.sh"
+    mode: 0744
+  when: dagger_installed.rc != 0
+  tags:
+    - dagger
+    - shellcmd
+    - dotfiles
+- name: install dagger
+  shell: "{{ansible_facts['user_dir']}}/.local/cache/dagger.sh"
+  environment:
+    BID_DIR: "{{ansible_facts['user_dir']}}/.local/bin"
+  when: dagger_installed.rc != 0
+  tags:
+    - dagger
+    - shellcmd
+    - dotfiles
+- name: install git-lfs
+  copy:
+    src: 'git-lfs'
+    dest: "{{ansible_facts['user_dir']}}/.local/bin/git-lfs"
+  tags:
+    - shellcmd
+    - dotfiles
+- name: download fzf
+  git:
+    repo: https://github.com/junegunn/fzf.git
+    dest: "{{ansible_facts['user_dir']}}/git/contrib/fzf"
+  notify:
+    - update_fzf
+  tags:
+    - shell
+    - shellcmd
+    - dotfiles
+- name: install uv 
+  import_tasks: curl_install.yaml
+  vars:
+    pkg_name: 'uv'
+    src: 'https://astral.sh/uv/install.sh'
+    extra_args: ''
+  environment:
+    INIT_YES: no
+    BIN_FOLDER: "{{ansible_facts['user_dir']}}/.local/bin"
+    PREFIX_LOCATION: "{{ansible_facts['user_dir']}}/git/contrib/uv"
+  tags:
+    - uv
+    - shellcmd
+    - dotfiles
