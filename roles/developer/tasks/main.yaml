@@ -52,7 +52,7 @@
     - flang
     - lld
     - latexmk
-    - texlive-scheme-medium #just texlive
+    - texlive-scheme-medium #just texlive and biber
     - uv
     - tailscale
   become: yes

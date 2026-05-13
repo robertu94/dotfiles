@@ -78,8 +78,13 @@ unset rc
 
 
 alias vim=nvim
+alias argo=uvx argo-shim
 function o() {
+{% if ansible_facts['os_family'] == "Darwin" %}
+  open "$@"
+{% else %}
   xdg-open "$@"
+{% endif %}
 }
 
 stty werase undef
@@ -95,6 +100,9 @@ eval "$(fzf --bash)"
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
 {% elif "zshrc" in item.dst %}
+autoload -z edit-command-line
+zle -N edit-command-line
+bindkey "^X^E" edit-command-line
 eval "$(fzf --zsh)"
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
