@@ -78,7 +78,7 @@ unset rc
 
 
 alias vim=nvim
-alias argo=uvx argo-shim
+alias argo='uvx argo-shim'
 function o() {
 {% if ansible_facts['os_family'] == "Darwin" %}
   open "$@"

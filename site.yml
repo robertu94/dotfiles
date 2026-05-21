@@ -1,12 +1,12 @@
 ---
+- hosts: laptop
+  strategy: free
+  roles:
+    - developer
+    - desktop
+    - backup
 - hosts: all
   strategy: free
   roles:
     - dotfiles
-- hosts: defiant
-  strategy: free
-  roles:
-    - desktop
-    - developer
-    - backup
 

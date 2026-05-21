@@ -4,7 +4,6 @@ hf_home: "{{ansible_facts['user_dir']}}/git/datasets/huggingface"
 spack_home: "{{ansible_facts['user_dir']}}/git/contrib/spack"
 site_settings: ""
 setup_spack_build_env: |
-  remove_path ~/.local/bin
   unset LD_LIBRARY_PATH
   unset PKG_CONFIG_PATH
   pushd ~/git/contrib/spack

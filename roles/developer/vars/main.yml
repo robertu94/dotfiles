@@ -1,0 +1,52 @@
+services:
+  RedHat:
+    - tailscale
+    - docker.socket
+  Darwin: []
+packages:
+  RedHat:
+    - gh
+    - ipmitool
+    - restic
+    - neovim
+    - hugo
+    - ghostty
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-buildx-plugin
+    - docker-compose-plugin
+    - perf 
+    - gcc
+    - gcc-c++
+    - gcc-gfortran
+    - gdb
+    - gdb-gdbserver
+    - git
+    - clang-devel
+    - flang
+    - lld
+    - latexmk
+    - texlive-scheme-medium
+    - uv
+    - tailscale
+    - cmake
+    - ninja-build
+  Darwin:
+    - gh
+    - ipmitool
+    - restic
+    - neovim
+    - hugo
+    - podman
+    - git
+    - gcc
+    - flang
+    - libomp
+    - lld
+    - texlive
+    - biber
+    - tailscale
+    - cmake
+    - ninja
+    - opencode

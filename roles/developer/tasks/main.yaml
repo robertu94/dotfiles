@@ -1,61 +1,49 @@
 ---
-- name: add 3rd party repos
-  ansible.builtin.get_url:
-    url: "{{item.url}}"
-    dest: "{{item.dest}}"
-  with_items:
-    - url: https://download.docker.com/linux/fedora/docker-ce.repo
-      dest: /etc/yum.repos.d/docker-ce.repo
-    - url: https://pkgs.tailscale.com/stable/fedora/tailscale.repo
-      dest: /etc/yum.repos.d/tailscale.repo
-    - url: https://cli.github.com/packages/rpm/gh-cli.repo
-      dest: /etc/yum.repos.d/gh-cli.repo
-  become: yes
-  tags:
-    - developer
-    - developer_repos
-  when: "{{ ansible_facts['os_family'] == Linux }}"
-- name: install 3rd party copr repos
-  community.general.copr:
-    name: pgdev/ghostty
-    state: enabled
-  become: yes
-  tags:
-    - developer
-    - developer_repos
-  when: "{{ ansible_facts['os_family'] == Linux }}"
-  # on MacOS, install XCode
+- block:
+  - name: add 3rd party repos
+    ansible.builtin.get_url:
+      url: "{{item.url}}"
+      dest: "{{item.dest}}"
+    with_items:
+      - url: https://download.docker.com/linux/fedora/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+      - url: https://pkgs.tailscale.com/stable/fedora/tailscale.repo
+        dest: /etc/yum.repos.d/tailscale.repo
+      - url: https://cli.github.com/packages/rpm/gh-cli.repo
+        dest: /etc/yum.repos.d/gh-cli.repo
+    become: yes
+    tags:
+      - developer
+      - developer_repos
+  - name: install 3rd party copr repos
+    community.general.copr:
+      name: pgdev/ghostty
+      state: enabled
+    become: yes
+    tags:
+      - developer
+      - developer_repos
+  when: ansible_facts['os_family'] == 'RedHat'
+- block:
+    - name: check if XCode Command Line tools are installed
+      command: xcode-select -p
+      register: xcode_select
+      ignore_errors: yes
+      changed_when: false
+      tags:
+        - developer
+    - name: Install Xcode Command Line Tools
+      command: xcode-select --install
+      when: xcode_select.rc != 0
+      tags:
+        - developer
+  when: ansible_facts['os_family'] == 'Darwin'
 - name: install developer tools
   ansible.builtin.package:
     name: "{{item}}"
     state: present
-  with_items:
-    - gh
-    - ipmitool
-    - restic
-    - neovim
-    - hugo
-    - ghostty
-    - docker-ce # docker
-    - docker-ce-cli # docker
-    - containerd.io # containerd
-    - docker-buildx-plugin  # docker-buildx
-    - docker-compose-plugin # docker-compose
-    - perf # no direct equivalent
-    - gcc
-    - gcc-c++ # part of gcc
-    - gcc-gfortran # part of gcc
-    - gdb # needs a custom configuration file based on OS debuginfod not supported
-    - gdb-gdbserver # part of gdb?
-    - git
-    - clang-devel # part of clang?
-    - flang
-    - lld
-    - latexmk
-    - texlive-scheme-medium #just texlive and biber
-    - uv
-    - tailscale
-  become: yes
+  with_items: "{{ packages[ansible_facts['os_family']] | default([])}}"
+  become: "{{ansible_facts['os_family'] != 'Darwin'}}"
   tags:
     - developer
     - developer_tools
@@ -64,9 +52,7 @@
     name: "{{item}}"
     state: started
     enabled: yes
-  with_items:
-    - tailscale
-    - docker.socket # does this need to be done differently?
+  with_items: "{{ services[ansible_facts['os_family']] | default([])}}"
   become: yes
   tags:
     - developer
@@ -76,7 +62,7 @@
     zone: trusted
     interface: tailscale0
     state: enabled
-  when: "{{ ansible_facts['os_family'] == Linux }}"
+  when: "ansible_facts['os_family'] == 'RedHat'"
   tags:
     - developer
     - developer_services
