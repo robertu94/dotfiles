@@ -33,6 +33,7 @@ packages:
     - cmake
     - ninja-build
   Darwin:
+    - npm
     - gh
     - ipmitool
     - restic
@@ -51,3 +52,6 @@ packages:
     - ninja
     - opencode
     - ghostty
+    - luarocks
+    - java
+    - javac

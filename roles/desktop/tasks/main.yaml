@@ -48,7 +48,6 @@
       - drawio
       - zotero
       - meld
-      - bitwarden
       - caffeine
       - activitywatch #TODO need to configure
       - mas # needed to install MacOS Apps from the AppStore with Ansible
