@@ -5,9 +5,9 @@
   register: cmd
   changed_when: no
   environment:
-    PATH: "{{ansible_facts['user_dir']}}/.cargo/bin:{{ansible_env.PATH}}"
+    PATH: "{{ansible_facts['user_dir']}}/.cargo/bin:{{ansible_facts['env'].PATH}}"
 - name: 'install {{pkg_name}}'
   shell: 'cargo install {{pkg}}'
   when: 'cmd.rc != 0'
   environment:
-    PATH: "{{ansible_facts['user_dir']}}/.cargo/bin:{{ansible_env.PATH}}"
+    PATH: "{{ansible_facts['user_dir']}}/.cargo/bin:{{ansible_facts['env'].PATH}}"

@@ -7,9 +7,9 @@
 - name: 'download {{pkg_name}}'
   get_url: 
     url: '{{src}}'
-    dest: '{{ansible_facts['user_dir']}}/.local/cache/{{pkg_name}}.sh'
+    dest: "{{ansible_facts['user_dir']}}/.local/cache/{{pkg_name}}.sh"
     mode: 0744
   when: cmd.rc != 0
 - name: 'install {{pkg_name}}'
-  shell: '{{ansible_facts['user_dir']}}/.local/cache/{{pkg_name}}.sh {{extra_args}}'
+  shell: "{{ansible_facts['user_dir']}}/.local/cache/{{pkg_name}}.sh {{extra_args}}"
   when: cmd.rc != 0

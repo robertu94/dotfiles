@@ -14,16 +14,16 @@
   tags:
     - developer
     - developer_repos
-  when: "{{ ansible_facts['os_family'] == Linux }}"
+  when: ansible_facts['os_family'] == "RedHat"
 - name: install 3rd party copr repos
   community.general.copr:
-    name: pgdev/ghostty
+    name: scottames/ghostty
     state: enabled
   become: yes
   tags:
     - developer
     - developer_repos
-  when: "{{ ansible_facts['os_family'] == Linux }}"
+  when: ansible_facts['os_family'] == "RedHat"
   # on MacOS, install XCode
 - name: install developer tools
   ansible.builtin.package:
@@ -65,7 +65,7 @@
     state: started
     enabled: yes
   with_items:
-    - tailscale
+    - tailscaled
     - docker.socket # does this need to be done differently?
   become: yes
   tags:
@@ -76,7 +76,8 @@
     zone: trusted
     interface: tailscale0
     state: enabled
-  when: "{{ ansible_facts['os_family'] == Linux }}"
+  become: yes
+  when: ansible_facts['os_family'] == "RedHat"
   tags:
     - developer
     - developer_services
